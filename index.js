@@ -147,8 +147,8 @@ client.on("guildMemberAdd", async (member) => {
   // Send messasge
   await member.send(
     `Hallo, 
-    ich bin der Sprechende Hut und werde dich in eines der Häuser einordnen. 
-    Bitte Sage mir jedoch zunächst deinen Namen, damit ich dir einen Server-Nickname geben kann!
+ich bin der Sprechende Hut und werde dich in eines der Häuser einordnen. 
+Bitte Sage mir jedoch zunächst deinen Namen, damit ich dir einen Server-Nickname geben kann!
     `
   );
 });
