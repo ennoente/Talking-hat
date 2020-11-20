@@ -11,6 +11,8 @@ const greetedMembers = new Discord.Collection();
 client.on("ready", async () => {
   guild = client.guilds.cache.first();
   if (!guild) throw new Error("Hier läuft was ganz schief!!1!");
+
+  console.log("Logged in.");
 });
 
 client.on("message", async (message) => {
