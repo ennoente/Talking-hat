@@ -133,13 +133,17 @@ Ohne Fachbereich schreibe 'muggel'`
 });
 
 client.on("guildMemberAdd", async (member) => {
-  console.log("GUILD MEMBER ADD!");
+  console.log("A new member jost joined the guild!");
 
+
+  console.log("Changing new member's nickname to 'Gast'");
   await member.setNickname("Gast");
 
+  console.log("Setting new member's role to 'Gast'");
   const guestRole = guild.roles.cache.find((role) => role.name === "Gast");
-  member.roles.add(guestRole);
+  await member.roles.add(guestRole);
 
+  console.log("Sending welcome message to new member");
   // Send messasge
   await member.send(
     `Hallo, 
