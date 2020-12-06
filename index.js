@@ -1,13 +1,15 @@
 const Discord = require("discord.js");
-
-const client = new Discord.Client();
-
 const auth = require("./auth.json");
 
+const client = new Discord.Client();
+const greetedMembers = new Discord.Collection();
+const nicknameRegexAntipattern = /\d/;
 let guild = null;
 
-const greetedMembers = new Discord.Collection();
 
+// Event callback when the client is logged in
+// Since the bot only works on one server/guild we can just grab
+// the first one from the list
 client.on("ready", async () => {
   guild = client.guilds.cache.first();
   if (!guild) throw new Error("Hier läuft was ganz schief!!1!");
@@ -15,6 +17,8 @@ client.on("ready", async () => {
   console.log("Logged in.");
 });
 
+
+// Event callback when a message is sent/received
 client.on("message", async (message) => {
   const { author, content } = message;
   const correspondingGuildMember = guild.members.cache.find(
@@ -32,7 +36,17 @@ client.on("message", async (message) => {
     guild.roles.cache.find((role) => role.name === "Gast").id ===
       correspondingGuildMember._roles[0]
   ) {
-    if (!content) author.send("Du musst schon was eingeben");
+    // The user sent an empty/falsy string (is that even possible? but let's just check to be sure)
+    if (!content) {
+      await author.send("Du musst schon was eingeben");
+      return;
+    }
+
+    // The desired nickname contains characters that are not allowed
+    if (nicknameRegexAntipattern.test(content)) {
+      await author.send('Dein Nickname darf leider keine Ziffern enthalten.');
+      return;
+    }
 
     await correspondingGuildMember.setNickname(content);
     await correspondingGuildMember.send(
@@ -49,12 +63,7 @@ Für Fachbereich Architektur schreibe 'FBA'
 Für Fachbereich Bauwesen, Geoinformation Gesundheitstechnologie schreibe 'FBGG'
 Ohne Fachbereich schreibe 'muggel'`
     );
-  } else if (
-    correspondingGuildMember.nickname !== "Gast" &&
-    correspondingGuildMember._roles.length === 1 &&
-    guild.roles.cache.find((role) => role.name === "Gast").id ===
-      correspondingGuildMember._roles[0]
-  ) {
+  } else if (memberHasNicknameButOnlyGuestRole(correspondingGuildMember)) {
     switch (content) {
       case "FBI":
         correspondingGuildMember.roles.remove(
@@ -132,6 +141,8 @@ Ohne Fachbereich schreibe 'muggel'`
   }
 });
 
+
+// Event callback when a new member joins the channel
 client.on("guildMemberAdd", async (member) => {
   console.log("A new member jost joined the guild!");
 
@@ -160,5 +171,14 @@ const memberHasGuestRole = (memberObj) => {
       memberObj._roles[0]
   );
 };
+
+const memberHasNicknameButOnlyGuestRole = (memberObj) => {
+  return (
+    correspondingGuildMember.nickname !== "Gast" &&
+    correspondingGuildMember._roles.length === 1 &&
+    guild.roles.cache.find((role) => role.name === "Gast").id ===
+      correspondingGuildMember._roles[0]
+  )
+}
 
 client.login(auth.token);
