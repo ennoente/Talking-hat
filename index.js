@@ -1,8 +1,6 @@
 const Discord = require("discord.js");
 const auth = require("./auth.json");
-
 const client = new Discord.Client();
-const greetedMembers = new Discord.Collection();
 const nicknameRegexAntipattern = /\d/;
 let guild = null;
 
@@ -174,10 +172,10 @@ const memberHasGuestRole = (memberObj) => {
 
 const memberHasNicknameButOnlyGuestRole = (memberObj) => {
   return (
-    correspondingGuildMember.nickname !== "Gast" &&
-    correspondingGuildMember._roles.length === 1 &&
+    memberObj.nickname !== "Gast" &&
+    memberObj._roles.length === 1 &&
     guild.roles.cache.find((role) => role.name === "Gast").id ===
-      correspondingGuildMember._roles[0]
+    memberObj._roles[0]
   )
 }
 
